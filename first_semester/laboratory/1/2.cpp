@@ -4,25 +4,23 @@
 #include <cmath>
 #include <iomanip>
 
-using namespace std;
-
 constexpr double EPS = 1e-9; // Вычисление в момент компиляции
 
 int main() {
     setlocale(LC_ALL, "Russian");
-    cout << fixed << setprecision(6);
+    std::cout << std::fixed << std::setprecision(6);
 
 
     double a, b;
-    cin >> a >> b;
+    std::cin >> a >> b;
 
     // a = 1
     if (fabs(a - 1) < EPS) { // Берём модуль разности и проверяем меньше ли он погрешности
         if (fabs(b) < EPS) {
-            cout << "Бесконечное количество решений\n";
+            std::cout << "Бесконечное количество решений\n";
         }
         else {
-            cout << "Нет решений\n";
+            std::cout << "Нет решений\n";
         }
         return 0;
     }
@@ -30,11 +28,11 @@ int main() {
     // a = -1
     if (fabs(a + 1) < EPS) {
         if (fabs(b) < EPS) {
-            cout << "Бесконечное количество решений\n";
+            std::cout << "Бесконечное количество решений\n";
             return 0;
         }
         else {
-            cout << (b / 2.0) << "\n";
+            std::cout << (b / 2.0) << "\n";
         }
     }
 
@@ -44,30 +42,30 @@ int main() {
 
         double x1 = b / (1 - a);
         if (x1 >= -EPS && a * x1 + b >= -EPS) {
-            cout << x1 << "\n";
+            std::cout << x1 << "\n";
             flag = true;
         }
 
         double x2 = -b / (1 + a);
         if (x2 >= -EPS && a * x2 + b < EPS) {
-            cout << x2 << "\n";
+            std::cout << x2 << "\n";
             flag = true;
         }
 
         double x3 = -b / (a + 1);
         if (x3 < EPS && a * x3 + b >= -EPS) {
-            cout << x3 << "\n";
+            std::cout << x3 << "\n";
             flag = true;
         }
 
         double x4 = -b / (a - 1);
         if (x4 < EPS && a * x4 + b < EPS) {
-            cout << x4 << "\n";
+            std::cout << x4 << "\n";
             flag = true;
         }
 
         if (!flag)
-            cout << "Нет решений\n";
+            std::cout << "Нет решений\n";
     }
 
 
