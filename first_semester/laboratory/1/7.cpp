@@ -46,7 +46,10 @@ int main() {
 
     cin >> N >> A >> B >> eps;
 
-    cout << fixed << setprecision(10);
+    int precision_k = (int)ceil(-log10(eps));
+    precision_k = max(1, precision_k + 1);
+    cout << fixed << setprecision(precision_k);
+
     cout << "x\tf1(x)\tf2(x)\tf3(x)\n";
 
     for (int i = 0; i < N; ++i) {
