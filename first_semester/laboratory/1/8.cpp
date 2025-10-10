@@ -52,7 +52,7 @@ void compute_integral(const string& name, double a, double b, double (*f)(double
 int main() {
     setlocale(LC_ALL, "Russian");
     const int N = 10000; // количество разбиений
-    cout << "Интеграл\tПрямоуг.\tТрапеции\tСимпсон\n";
+    cout << "Интеграл\tПрямоуг\tТрапеции\tСимпсон\n";
 
     compute_integral("a", 0.0, 1.0, f1, N);
     compute_integral("b", -7.0 / 3.0, 7.0 / 3.0, f2, N);
