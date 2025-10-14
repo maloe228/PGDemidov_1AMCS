@@ -1,3 +1,5 @@
+// 10
+
 #include <iostream>
 #include <string>
 #include <cmath>
