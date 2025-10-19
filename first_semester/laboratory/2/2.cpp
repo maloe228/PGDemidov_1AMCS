@@ -3,10 +3,12 @@
 int main() {
     std::cout << "Enter the size for array\n";
     int size;
+    std::cin >> size;
 
 
     std::cout << "Enter the K\n";
     int k;
+    std::cin >> k;
 
 
     int *arr = new int[size];
@@ -68,12 +70,12 @@ int main() {
             newArr[new_arr_index] = arr[j];
             ++new_arr_index;
         }
-        
+
         // Копируем элементы после конца удаляемой серии
         for (int j = del_end_index; j < size; ++j) {
             newArr[new_arr_index++] = arr[j];
         }
-        
+
         delete[] arr;
 
         // Вывод
