@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 
 // Удаление элемента по индексу
 int* removeElement(int* arr, int& n, int index) {
@@ -16,41 +17,55 @@ int* removeElement(int* arr, int& n, int index) {
 // Максимальное среди положительных нечётных
 int* highest_positive(int* arr, int &n) {
     bool found = false;
-    int maxi = 0, l = n + 1;
+    int maxi = 0, l = -1;
+
     for (int i = 0; i < n; i++) {
-        if (!found && arr[i] % 2 != 0) {
-            if (arr[i] > maxi) {
+        if (arr[i] > 0 && arr[i] % 2 != 0) {
+            if (!found) {
                 maxi = arr[i];
                 l = i;
+                found = true;
+            } else {
+                if (arr[i] > maxi) {
+                    maxi = arr[i];
+                    l = i;
+                }
             }
-            found = true;
         }
     }
-    if (l ==  n + 1) {
+
+    if (l == -1) {
         return arr;
     }
 
-    return removeElement(arr, n,l);
+    return removeElement(arr, n, l);
 }
 
 // Минимальное среди положительных чётных
 int* minimal_positive(int* arr, int &n) {
     bool found = false;
-    int mini = 0, l = n + 1;
-    for (int i = 1; i < n; i++) {
-        if (!found && arr[i] % 2 == 0) {
-            if (arr[i] < mini) {
+    int mini = 0, l = -1;
+
+    for (int i = 0; i < n; i++) {
+        if (arr[i] > 0 && arr[i] % 2 == 0) {
+            if (!found) {
                 mini = arr[i];
                 l = i;
+                found = true;
+            } else {
+                if (arr[i] < mini) {
+                    mini = arr[i];
+                    l = i;
+                }
             }
-            found = true;
         }
     }
-    if (l == n + 1) {
+
+    if (l == -1) {
         return arr;
     }
 
-    return removeElement(arr,n,l);
+    return removeElement(arr, n, l);
 }
 
 // Совершенность
@@ -73,31 +88,75 @@ bool isPerfect(int n) {
 // Индексы первых двух совершенных
 int* index_2_Perfect(int* arr, int &n) {
     for (int i = 0; i < 2; ++i) {
-        int i_otv = 0;
+        int i_otv = -1;
         for (int j = 0; j < n; j++) {
             if (isPerfect(arr[j])) {
-                i_otv = i;
+                i_otv = j;
                 break;
             }
         }
-        arr = removeElement(arr, n, i_otv);
+        if (i_otv != -1) {
+            arr = removeElement(arr, n, i_otv);
+        }
+        else {
+            break;
+        }
     }
     return arr;
 }
 
-
-int main() {
+int* readArray(const char* filename, int& n) {
     std::ifstream fin;
-    fin.open("array.txt");
+    fin.open(filename);
 
-    int n; // Число элементов массива из файла
-    fin>>n;
+    if (!fin.is_open()) {
+        std::cout << "Error input file\n";
+        n = 0;
+        return nullptr;
+    }
 
-    int* arr = new int[n]; // Считали данные из файла в массив и закрыли файл
+    fin >> n;
+    if (n <= 0) {
+        std::cout << "Invalid array size\n";
+        fin.close();
+        n = 0;
+        return nullptr;
+    }
+
+    int* arr = new int[n];
     for (int i = 0; i < n; i++) {
-        fin>>arr[i];
+        fin >> arr[i];
     }
     fin.close();
+    return arr;
+}
+
+void writeArray(const char* filename, int* arr, int n) {
+    std::ofstream fout;
+    fout.open(filename);
+
+    if (!fout.is_open()) {
+        std::cout << "Error opening output file\n";
+        return;
+    }
+
+    for (int i = 0; i < n; i++) {
+        fout << arr[i] << ' ';
+    }
+    fout.close();
+}
+
+int main() {
+    const char* inputFile = "C:\\Users\\vaces\\CLionProjects\\prog\\array.txt";
+    const char* outputFile = "C:\\Users\\vaces\\CLionProjects\\prog\\output.txt";
+
+    int n;
+    int* arr = readArray(inputFile, n);
+
+    // Файл не открылся
+    if (arr == nullptr) {
+        return 1;
+    }
 
 
     for (int i = 0; i < 2; i++) {
@@ -106,15 +165,8 @@ int main() {
         arr = index_2_Perfect(arr, n);
     }
 
+    writeArray(outputFile, arr, n);
 
-    std::ofstream fout;
-    fout.open("output.txt");
-    for (int i = 0; i < n; i++) {
-        fout << arr[i] << ' ';
-    }
-
-
-    fout.close();
     delete[] arr;
     return 0;
 }
