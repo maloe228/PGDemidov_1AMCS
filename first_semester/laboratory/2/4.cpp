@@ -6,21 +6,25 @@
 using std::cout;
 using std::cin;
 
+// Колличество рядов
 int calculateRows(int n) {
     return (n + 3) / 4;
 }
 
+// Корды ячейки по номеру
 void numberToCoords(int number, int* row, int* col) {
     *row = (number - 1) / 4;
     *col = (number - 1) % 4;
 }
 
+// Номер ячейки по кординатам
 int coordsToNumber(int row, int col, int totalCells) {
     int num = row * 4 + col + 1;
     if (num < 1 || num > totalCells) return -1;
     return num;
 }
 
+// Принадлежность клетки полю
 bool isValidCoords(int row, int col, int totalCells) {
     if (row < 0) return false;
     int rows = calculateRows(totalCells);
@@ -30,6 +34,7 @@ bool isValidCoords(int row, int col, int totalCells) {
     return num != -1;
 }
 
+// Отрисовка поля с выделением зелёным клеток из массива markedCells
 void drawField(int totalCells, int* markedCells, int markedCount) {
     int rows = calculateRows(totalCells);
     int cellNum = 1;
@@ -65,9 +70,10 @@ void drawField(int totalCells, int* markedCells, int markedCount) {
     }
 }
 
-void getWoundedKingMoves(int row, int col, int totalCells,
-    int* moveRows, int* moveCols, int* moveNumbers, int* count)
-{
+// Передвижение сломаного короля
+void getWoundedKingMoves(int row, int col, int totalCells, int* moveRows, int* moveCols, int* moveNumbers, int* count) {
+
+    // Массивы смещения
     int directions_row[4] = { -1, 0, 0, 1 };
     int directions_col[4] = { -1, 1, -1, 1 };
 
@@ -85,9 +91,8 @@ void getWoundedKingMoves(int row, int col, int totalCells,
     }
 }
 
-void getKnightMoves(int row, int col, int totalCells,
-    int* moveRows, int* moveCols, int* moveNumbers, int* count)
-{
+// Доступные ходы для коня
+void getKnightMoves(int row, int col, int totalCells, int* moveRows, int* moveCols, int* moveNumbers, int* count) {
     int directions_row[8] = { -2, -2, -1, -1, 1, 1, 2, 2 };
     int directions_col[8] = { -1, 1, -2, 2, -2, 2, -1, 1 };
 
@@ -105,9 +110,8 @@ void getKnightMoves(int row, int col, int totalCells,
     }
 }
 
-void findTwoMoveReachable(int startPos, int totalCells, int isKnight,
-    int* result, int* resultCount)
-{
+// Достижимые клетки за два хода из стартовой позиции (ответ по указателю в result)
+void findTwoMoveReachable(int startPos, int totalCells, int isKnight, int* result, int* resultCount) {
     int startRow, startCol;
     numberToCoords(startPos, &startRow, &startCol);
 
@@ -142,43 +146,48 @@ void findTwoMoveReachable(int startPos, int totalCells, int isKnight,
     }
 }
 
-void findShortestPath(int startPos, int endPos, int totalCells, int isKnight,
-    int* path, int* pathLength)
-{
+// Кратчайший путь между startPos и endPos по BFS(поиск в ширину)
+// Работает через очередь
+void findShortestPath(int startPos, int endPos, int totalCells, int isKnight, int* path, int* pathLength) {
+
+    // Начальная и конечная позиции совпадают
     if (startPos == endPos) {
         path[0] = startPos;
         *pathLength = 1;
         return;
     }
 
-    const int MAX = totalCells + 10;
-    int* visited = new int[MAX]();
-    int* parent = new int[MAX];
-    int* queue = new int[MAX];
-    int front = 0, rear = 0;
+    const int MAX = totalCells + 10; // Макс размер массива с запасом
+    int* visited = new int[MAX](); // Посещённые клетки
+    int* parent = new int[MAX]; // Предыдущие клетки
+    int* queue = new int[MAX]; // ОЧЕРЕДЬ
+    int front = 0, rear = 0; // Начало и конец очереди
 
-    visited[startPos] = 1;
-    parent[startPos] = -1;
-    queue[rear++] = startPos;
+    visited[startPos] = 1; // Начальная клетка посещена
+    parent[startPos] = -1; // Нет предыдущей
+    queue[rear++] = startPos; // Добавляем начальную клетку в очередь
 
+    // Продолжаем пока очередь не пуста
     while (front < rear) {
-        int current = queue[front++];
-        int r, c;
-        numberToCoords(current, &r, &c);
+        int current = queue[front++]; // Извлекаем клетку и сдвигаем указатель
+        int r, c; // Корды
+        numberToCoords(current, &r, &c); // Номер клетки в корды
 
-        int moveRows[8], moveCols[8], moveNumbers[8], count = 0;
+        int moveRows[8], moveCols[8], moveNumbers[8], count = 0; // До 8 из-за коня
         if (isKnight)
-            getKnightMoves(r, c, totalCells, moveRows, moveCols, moveNumbers, &count);
+            getKnightMoves(r, c, totalCells, moveRows, moveCols, moveNumbers, &count); // Заполняем
         else
-            getWoundedKingMoves(r, c, totalCells, moveRows, moveCols, moveNumbers, &count);
+            getWoundedKingMoves(r, c, totalCells, moveRows, moveCols, moveNumbers, &count); // Заполняем
 
+        // Перебор возможных ходов
         for (int i = 0; i < count; ++i) {
             int next = moveNumbers[i];
-            if (!visited[next]) {
-                visited[next] = 1;
-                parent[next] = current;
-                queue[rear++] = next;
+            if (!visited[next]) { // Проверка не посетили ли мы уже эту клетку
+                visited[next] = 1; // Отметка посещения
+                parent[next] = current; // ОТкуда пришли
+                queue[rear++] = next; // Новая клетка в конец очереди
 
+                // Если достигли конечной позиции востанавливаем путь и подсчитываем его длинну
                 if (next == endPos) {
                     int temp[100], len = 0;
                     for (int v = next; v != -1; v = parent[v])
