@@ -1,8 +1,6 @@
 # Структура
 
 - first_semester
-	- contest
-		- 3_Массивы
 	- laboratory
 		- 1
 - second semester
